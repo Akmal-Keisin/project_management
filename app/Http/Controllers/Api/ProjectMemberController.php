@@ -21,7 +21,7 @@ class ProjectMemberController extends Controller
     public function listMember($id)
     {
         try {
-            $url = url('storage/public');
+            $url = url('storage');
             $members = Project::join('project_user_roles', 'project_user_roles.project_id', '=', 'projects.id')
                 ->join('users', 'users.id', '=', 'project_user_roles.user_id')
                 ->join('roles', 'roles.id', '=', 'project_user_roles.role_id')
@@ -62,7 +62,7 @@ class ProjectMemberController extends Controller
 
             $validated = $validate->validated();
 
-            $url = url('storage/public');
+            $url = url('storage');
             $member = Project::join('project_user_roles', 'projects.id', '=', 'project_user_roles.project_id')
                 ->join('roles', 'roles.id', '=', 'project_user_roles.role_id')
                 ->join('users', 'users.id', '=', 'project_user_roles.user_id')
@@ -252,7 +252,7 @@ class ProjectMemberController extends Controller
             $userProject->role_id = (int) $validated['role_id'];
             $userProject->save();
 
-            $url = url('storage/public');
+            $url = url('storage');
             $data = ProjectUserRole::join('users', 'users.id', '=', 'project_user_roles.user_id')
                 ->join('projects', 'projects.id', '=', 'project_user_roles.project_id')
                 ->join('roles', 'roles.id', '=', 'project_user_roles.role_id')

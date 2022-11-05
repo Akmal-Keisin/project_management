@@ -21,7 +21,7 @@ class ProjectController extends Controller
     public function myProject()
     {
         try {
-            $url = url('storage/public');
+            $url = url('storage');
             $projects = Project::join('project_user_roles', 'project_user_roles.project_id', '=', 'projects.id')
                 ->join('roles', 'roles.id', '=', 'project_user_roles.role_id')
                 ->join('users', 'users.id', '=', 'project_user_roles.user_id')
@@ -163,7 +163,7 @@ class ProjectController extends Controller
     public function detailProject($id)
     {
         try {
-            $url = url('storage/public');
+            $url = url('storage');
             $project = Project::join('project_user_roles', 'projects.id', '=', 'project_user_roles.project_id')
                 ->join('users as created_by', 'created_by.id', '=', 'projects.created_by')
                 ->join('users', 'project_user_roles.user_id', '=', 'users.id')

@@ -21,7 +21,7 @@ class ProfileController extends Controller
     public function getProfile(Request $request)
     {
         try {
-            $url = url('storage/public');
+            $url = url('storage');
             $user = User::find(Auth::user()->id)->toArray();
             if (!is_null($user['image'])) {
                 $user['image'] = $url . '/' . $user['image'];
