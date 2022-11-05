@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Models\Role;
 use App\Models\ProjectUserRole;
-use App\Models\TaskDocument;
+use App\Models\TaskSubmition;
 use App\Models\User;
 use App\Models\Task;
 use App\Models\SubmitTask;
@@ -121,6 +121,62 @@ class TaskController extends Controller
         } catch (\Throwable $e) {
             Log::error($e);
             return Response::error();            
+        }
+    }
+
+    public function submitTask(Request $request)
+    {
+        try {
+            $validated = Validator::make($request->all(), [
+                'submition_note' => 'required',
+                'task_id' => 'required|numeric'
+            ]);
+
+            if ($validated->fails()) {
+                return Response::failed($validated->errors, 'Validation error');
+            }
+
+            $task = Task::whereNull('date_end')->where('id', $request->task_id)->first();
+            if ($task->user_id != Auth::user()->id) {
+                return Response::failed(null, 'User does not have permission to edit this task');
+            }
+
+            $task->date_end = date('Y-m-d');
+            $task->status = (date('Y-m-d') < $task->deadline) ? 'Late' : 'Done';
+            $taskSubmition = TaskSubmition::create([
+                'task_id' => $task->id,
+                'submition_note' => $request->submition_note
+            ]);
+            $task->save();
+
+            $data = Task::join('users', 'users.id', '=', 'tasks.user_id')
+                ->join('users as task_from', 'task_from.id', '=', 'task_from_id')
+                ->join('projects', 'projects.id', '=', 'tasks.project_id')
+                ->join('task_submitions', 'task_submitions.task_id', 'tasks.id')
+                ->whereNull('tasks.deleted_at')
+                ->whereNull('users.deleted_at')
+                ->whereNull('task_from.deleted_at')
+                ->whereNull('projects.deleted_at')
+                ->where('tasks.id', $request->task_id)
+                ->select(
+                    'tasks.id as task_id',
+                    'tasks.name as task_title',
+                    'tasks.description as task_description',
+                    'task_from.name as task_from',
+                    'task_from.id as task_from.id',
+                    'tasks.date_start',
+                    'tasks.date_end',
+                    'tasks.deadline',
+                    'tasks.status',
+                    'task_submitions.submition_note',
+                    'task_submitions.id as subimition_id',
+                )
+                ->first();
+
+            return Response::success($data, 'Task submited successfully');
+        } catch (\Throwable $e) {
+            Log::error($e);
+            return Response::error();
         }
     }
 
