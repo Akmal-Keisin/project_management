@@ -121,7 +121,6 @@
                                             <td class="border-top-0 text-muted px-2 py-4 font-14">{{ Str::limit($project['project_description'], 20, '...') }}</td>
                                             <td class="border-top-0 text-center text-muted px-2 py-4">{{ $project['status'] }}</td>
                                             <td class="font-weight-medium text-dark border-top-0 px-2 py-4">
-                                                <button class="btn btn-sm btn-primary">Detail</button>
                                                 <a href="{{ url("project/edit/$project->id") }}" class="btn btn-sm btn-warning">Edit</a>
                                                 <form action="{{ url("project/$project->id") }}" class="d-inline-block" method="post">
                                                     @csrf
